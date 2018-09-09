@@ -323,6 +323,7 @@ func Provider() terraform.ResourceProvider {
 			"aws_budgets_budget":                               resourceAwsBudgetsBudget(),
 			"aws_cloud9_environment_ec2":                       resourceAwsCloud9EnvironmentEc2(),
 			"aws_cloudformation_stack":                         resourceAwsCloudFormationStack(),
+			"aws_cloudfront_behavior":                          resourceAwsCloudFrontBehavior(),
 			"aws_cloudfront_distribution":                      resourceAwsCloudFrontDistribution(),
 			"aws_cloudfront_origin":                            resourceAwsCloudFrontOrigin(),
 			"aws_cloudfront_origin_access_identity":            resourceAwsCloudFrontOriginAccessIdentity(),
