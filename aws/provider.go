@@ -324,6 +324,7 @@ func Provider() terraform.ResourceProvider {
 			"aws_cloud9_environment_ec2":                       resourceAwsCloud9EnvironmentEc2(),
 			"aws_cloudformation_stack":                         resourceAwsCloudFormationStack(),
 			"aws_cloudfront_distribution":                      resourceAwsCloudFrontDistribution(),
+			"aws_cloudfront_origin":                            resourceAwsCloudFrontOrigin(),
 			"aws_cloudfront_origin_access_identity":            resourceAwsCloudFrontOriginAccessIdentity(),
 			"aws_cloudtrail":                                   resourceAwsCloudTrail(),
 			"aws_cloudwatch_event_permission":                  resourceAwsCloudWatchEventPermission(),
