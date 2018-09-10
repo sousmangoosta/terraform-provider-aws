@@ -216,19 +216,17 @@ func resourceAwsCloudFrontBehaviorRead(d *schema.ResourceData, meta interface{})
 	}
 
 	behaviors := expandCacheBehaviors(d.Get("ordered_cache_behavior").([]interface{}))
-
-	behavior := compareBehaviors(behaviors, resp)
-
+	behavior := compareBehaviors(behaviors, resp.DistributionConfig)
 	d.Set("ordered_cache_behavior", behavior)
 
 	return nil
 }
 
-func compareBehaviors(behaviors *cloudfront.CacheBehaviors, resp *cloudfront.GetDistributionConfigOutput) []interface{} {
+func compareBehaviors(behaviors *cloudfront.CacheBehaviors, resp *cloudfront.DistributionConfig) []interface{} {
 	var qty int64
 	s := []interface{}{}
 	for _, v := range behaviors.Items {
-		for _, nv := range resp.DistributionConfig.CacheBehaviors.Items {
+		for _, nv := range resp.CacheBehaviors.Items {
 			if *nv.PathPattern == *v.PathPattern {
 				s = append(s, flattenCacheBehavior(nv))
 				qty++

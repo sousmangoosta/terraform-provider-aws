@@ -147,7 +147,9 @@ func flattenDistributionConfig(d *schema.ResourceData, distributionConfig *cloud
 		if _, ok := d.GetOk("cache_behavior"); ok {
 			err = d.Set("cache_behavior", flattenCacheBehaviorsDeprecated(distributionConfig.CacheBehaviors))
 		} else {
-			err = d.Set("ordered_cache_behavior", flattenCacheBehaviors(distributionConfig.CacheBehaviors))
+			behaviors := expandCacheBehaviors(d.Get("ordered_cache_behavior").([]interface{}))
+			behavior := compareBehaviors(behaviors, distributionConfig)
+			d.Set("ordered_cache_behavior", behavior)
 		}
 
 		if err != nil {
@@ -177,7 +179,9 @@ func flattenDistributionConfig(d *schema.ResourceData, distributionConfig *cloud
 		}
 	}
 	if *distributionConfig.Origins.Quantity > 0 {
-		err = d.Set("origin", flattenOrigins(distributionConfig.Origins))
+		origins := expandOrigins(d.Get("origin").(*schema.Set))
+		origin := compareOrigins(origins, distributionConfig)
+		d.Set("origin", origin)
 		if err != nil {
 			return err
 		}

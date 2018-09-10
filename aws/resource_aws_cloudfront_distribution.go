@@ -778,9 +778,38 @@ func resourceAwsCloudFrontDistributionRead(d *schema.ResourceData, meta interfac
 
 func resourceAwsCloudFrontDistributionUpdate(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*AWSClient).cloudfrontconn
+
+	paramsGet := &cloudfront.GetDistributionConfigInput{
+		Id: aws.String(d.Id()),
+	}
+
+	resp, errGet := conn.GetDistributionConfig(paramsGet)
+	if errGet != nil {
+		if errcode, ok := errGet.(awserr.Error); ok && errcode.Code() == "NoSuchDistribution" {
+			log.Printf("[WARN] No Distribution found: %s", d.Id())
+			return nil
+		}
+		return errGet
+	}
+
+	log.Printf("Before: %s", d)
+
+	dist := schema.ResourceData{}
+	dist = *d
+
+	behaviors := expandCacheBehaviors(dist.Get("ordered_cache_behavior").([]interface{}))
+	updateBehaviors(behaviors.Items, resp.DistributionConfig.CacheBehaviors)
+	dist.Set("ordered_cache_behavior", flattenCacheBehaviors(resp.DistributionConfig.CacheBehaviors))
+
+	origins := expandOrigins(dist.Get("origin").(*schema.Set))
+	updateOrigins(origins.Items, resp.DistributionConfig.Origins)
+	dist.Set("origin", flattenOrigins(resp.DistributionConfig.Origins))
+
+	log.Printf("After: %s", d)
+
 	params := &cloudfront.UpdateDistributionInput{
 		Id:                 aws.String(d.Id()),
-		DistributionConfig: expandDistributionConfig(d),
+		DistributionConfig: expandDistributionConfig(&dist),
 		IfMatch:            aws.String(d.Get("etag").(string)),
 	}
 

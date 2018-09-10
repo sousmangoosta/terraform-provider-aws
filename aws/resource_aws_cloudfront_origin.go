@@ -186,17 +186,17 @@ func resourceAwsCloudFrontOriginRead(d *schema.ResourceData, meta interface{}) e
 
 	origins := expandOrigins(d.Get("origin").(*schema.Set))
 
-	origin := compareOrigins(origins, resp)
+	origin := compareOrigins(origins, resp.DistributionConfig)
 
 	d.Set("origin", origin)
 
 	return nil
 }
 
-func compareOrigins(origins *cloudfront.Origins, resp *cloudfront.GetDistributionConfigOutput) *schema.Set {
+func compareOrigins(origins *cloudfront.Origins, resp *cloudfront.DistributionConfig) *schema.Set {
 	s := []interface{}{}
 	for _, v := range origins.Items {
-		for _, nv := range resp.DistributionConfig.Origins.Items {
+		for _, nv := range resp.Origins.Items {
 			if *nv.Id == *v.Id {
 				s = append(s, flattenOrigin(nv))
 			}
